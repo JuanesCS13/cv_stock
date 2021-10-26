@@ -50,6 +50,5 @@ path('importarBDD',views.ImportarBDD.as_view(), name='importarBDD'),
 path('descargarBDD', views.DescargarBDD.as_view(), name='descargarBDD'),
 path('configuracionGeneral', views.ConfiguracionGeneral.as_view(), name='configuracionGeneral'),
 
-path('verManualDeUsuario/<str:pagina>/',views.VerManualDeUsuario.as_view(), name='verManualDeUsuario')
 ]
 

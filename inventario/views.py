@@ -1397,36 +1397,7 @@ class ConfiguracionGeneral(LoginRequiredMixin, View):
             messages.success(request, 'Configuracion actualizada exitosamente!')          
             return HttpResponseRedirect("/inventario/configuracionGeneral")
         else:
-            form = OpcionesFormulario(instance=conf)
+            form = OpcionesFormulario()
             #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/opciones/configuracion.html', {'form': form})
 
-
-class VerManualDeUsuario(LoginRequiredMixin, View):
-    login_url = '/inventario/login'
-    redirect_field_name = None
-
-    def get(self, request, pagina):
-        if pagina == 'inicio':
-            return render(request, 'inventario/manual/index.html') 
-
-        if pagina == 'producto':
-            return render(request, 'inventario/manual/producto.html') 
-
-        if pagina == 'proveedor':
-            return render(request, 'inventario/manual/proveedor.html') 
-
-        if pagina == 'pedido':
-            return render(request, 'inventario/manual/pedido.html') 
-
-        if pagina == 'clientes':
-            return render(request, 'inventario/manual/clientes.html') 
-
-        if pagina == 'factura':
-            return render(request, 'inventario/manual/factura.html') 
-
-        if pagina == 'usuarios':
-            return render(request, 'inventario/manual/usuarios.html')
-
-        if pagina == 'opciones':
-            return render(request, 'inventario/manual/opciones.html')
