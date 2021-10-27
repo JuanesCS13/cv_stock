@@ -52,19 +52,21 @@ class Producto(models.Model):
         arreglo = []
         etiqueta = True
         extra = 1
-
-        for indice,objeto in enumerate(objetos):
-            arreglo.append([])
-            if etiqueta:
-                arreglo[indice].append(0)
-                arreglo[indice].append("------")
-                etiqueta = False
+        
+        try:
+            for indice,objeto in enumerate(objetos):
                 arreglo.append([])
+                if etiqueta:
+                    arreglo[indice].append(0)
+                    arreglo[indice].append("------")
+                    etiqueta = False
+                    arreglo.append([])
 
-            arreglo[indice + extra].append(objeto.id)
-            precio_producto = objeto.precio
-            arreglo[indice + extra].append("%d" % (precio_producto) )  
-
+                arreglo[indice + extra].append(objeto.id)
+                precio_producto = objeto.precio
+                arreglo[indice + extra].append("%d" % (precio_producto) )  
+        except Exception as e:
+            pass
         return arreglo 
 
     @classmethod
@@ -73,7 +75,7 @@ class Producto(models.Model):
         arreglo = []
         etiqueta = True
         extra = 1
-
+    
         for indice,objeto in enumerate(objetos):
             arreglo.append([])
             if etiqueta:
@@ -112,7 +114,7 @@ class Cliente(models.Model):
             arreglo.append([])
             arreglo[indice].append(objeto.cedula)
             nombre_cliente = objeto.nombre + " " + objeto.apellido
-            arreglo[indice].append("%s. C.I: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
+            arreglo[indice].append("%s. C.C: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
  
         return arreglo   
 
@@ -186,7 +188,7 @@ class Proveedor(models.Model):
             arreglo.append([])
             arreglo[indice].append(objeto.cedula)
             nombre_cliente = objeto.nombre + " " + objeto.apellido
-            arreglo[indice].append("%s. C.I: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
+            arreglo[indice].append("%s. C.C: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
  
         return arreglo 
 
