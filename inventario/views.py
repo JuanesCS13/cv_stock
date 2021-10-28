@@ -1403,12 +1403,16 @@ class ConfiguracionGeneral(LoginRequiredMixin, View):
             if imagen:
                 manejarArchivo(imagen,'inventario/static/inventario/assets/logo/logo2.png')
 
-            conf = Opciones.objects.get(id=1)
-            conf.moneda = moneda
-            conf.valor_iva = valor_iva
-            conf.mensaje_factura = mensaje_factura
-            conf.nombre_negocio = nombre_negocio
-            conf.save()
+            try:
+                conf = Opciones.objects.get(id=1)
+            except:
+                conf = Opciones()
+            finally:
+                conf.moneda = moneda
+                conf.valor_iva = valor_iva
+                conf.mensaje_factura = mensaje_factura
+                conf.nombre_negocio = nombre_negocio
+                conf.save()
 
 
             messages.success(request, 'Configuracion actualizada exitosamente!')          
