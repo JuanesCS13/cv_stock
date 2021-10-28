@@ -1,3 +1,4 @@
+from inventario.exceptions import ErrorConfiguracionGeneralNoDefinida
 from .models import Producto, Opciones
 from decimal import Decimal
 
@@ -15,9 +16,12 @@ def productoTieneIva(idProducto):
     return resultado
 
 def sacarIva(elemento):
-    iva = Opciones.objects.get(id=1)
-    ivaSacado =  iva.valor_iva/100
-    resultado = elemento + (elemento * Decimal(ivaSacado))  
+    try:
+        iva = Opciones.objects.get(id=1)
+        ivaSacado =  iva.valor_iva/100
+        resultado = elemento + (elemento * Decimal(ivaSacado))  
+    except:
+        raise ErrorConfiguracionGeneralNoDefinida('No se ha definido un valor para el IVA')
     return resultado    
 
 def ivaActual(modo):

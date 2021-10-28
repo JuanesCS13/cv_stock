@@ -26,6 +26,8 @@ from .models import *
 from .forms import *
 #funciones personalizadas
 from .funciones import *
+#excepciones personalizadas
+from .exceptions import ErrorConfiguracionGeneralNoDefinida
 
 
 class Login(View):
@@ -623,7 +625,9 @@ class EmitirFactura(LoginRequiredMixin, View):
     def get(self, request):
         cedulas = Cliente.cedulasRegistradas()   
         form = EmitirFacturaFormulario(cedulas=cedulas)
-        contexto = {'form':form}
+        contexto = {'form':form, 'deshabilitar_entrada': ''}
+        if len(cedulas) == 0:
+            contexto['deshabilitar_entrada'] = 'disabled'
         contexto = complementarContexto(contexto,request.user) 
         return render(request, 'inventario/factura/emitirFactura.html', contexto)
         
@@ -985,7 +989,9 @@ class AgregarPedido(LoginRequiredMixin, View):
     def get(self, request):
         cedulas = Proveedor.cedulasRegistradas()
         form = EmitirPedidoFormulario(cedulas=cedulas)
-        contexto = {'form':form}
+        contexto = {'form':form, 'deshabilitar_entrada': ''}
+        if len(cedulas) == 0:
+            contexto['deshabilitar_entrada'] = 'disabled'
         contexto = complementarContexto(contexto,request.user) 
         return render(request, 'inventario/pedido/emitirPedido.html', contexto)
 
@@ -1077,14 +1083,18 @@ class DetallesPedido(LoginRequiredMixin, View):
                 sub_monto += index
 
             #--Saca el monto general
-            for index,element in enumerate(subtotal):
-                if productoTieneIva(id_producto[index]):
-                    nuevoPrecio = sacarIva(element)   
-                    monto_general += nuevoPrecio
-                    total_general.append(nuevoPrecio)                     
-                else:                   
-                    monto_general += element
-                    total_general.append(element)        
+            try:
+                for index,element in enumerate(subtotal):
+                    if productoTieneIva(id_producto[index]):
+                        nuevoPrecio = sacarIva(element)
+                        monto_general += nuevoPrecio
+                        total_general.append(nuevoPrecio)                     
+                    else:                   
+                        monto_general += element
+                        total_general.append(element) 
+            except ErrorConfiguracionGeneralNoDefinida as c:
+                messages.error(request, c.message)
+                return HttpResponseRedirect("/inventario/detallesPedido")
 
             from datetime import date
 
@@ -1354,19 +1364,26 @@ class ConfiguracionGeneral(LoginRequiredMixin, View):
     redirect_field_name = None
 
     def get(self, request):
-        conf = Opciones.objects.get(id=1)
-        form = OpcionesFormulario()
-        
-        #Envia al usuario el formulario para que lo llene
+        try:
+            conf = Opciones.objects.get(id=1)
+            form = OpcionesFormulario()
+            
+            #Envia al usuario el formulario para que lo llene
 
-        form['moneda'].field.widget.attrs['value']  = conf.moneda
-        form['valor_iva'].field.widget.attrs['value']  = conf.valor_iva
-        form['mensaje_factura'].field.widget.attrs['value']  = conf.mensaje_factura
-        form['nombre_negocio'].field.widget.attrs['value']  = conf.nombre_negocio
+            form['moneda'].field.widget.attrs['value']  = conf.moneda
+            form['valor_iva'].field.widget.attrs['value']  = conf.valor_iva
+            form['mensaje_factura'].field.widget.attrs['value']  = conf.mensaje_factura
+            form['nombre_negocio'].field.widget.attrs['value']  = conf.nombre_negocio
 
-        contexto = {'form':form}    
-        contexto = complementarContexto(contexto,request.user) 
-        return render(request, 'inventario/opciones/configuracion.html', contexto)
+            contexto = {'form':form}    
+            contexto = complementarContexto(contexto,request.user) 
+            return render(request, 'inventario/opciones/configuracion.html', contexto)
+        except:
+            form = OpcionesFormulario()
+            contexto = {'form':form}    
+            contexto = complementarContexto(contexto,request.user) 
+            return render(request, 'inventario/opciones/configuracion.html', contexto)
+            
 
     def post(self,request):
         # Crea una instancia del formulario y la llena con los datos:

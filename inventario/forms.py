@@ -89,7 +89,7 @@ class ExportarClientesFormulario(forms.Form):
 
 
 class ClienteFormulario(forms.ModelForm):
-    tipoC =  [ ('1','V'),('2','E') ]
+    tipoC =  [ ('1','CC'),('2','CE'),('3', 'NIT') ]
 
     telefono2 = forms.CharField(
         required = False,
@@ -147,14 +147,18 @@ class ClienteFormulario(forms.ModelForm):
 
 class EmitirFacturaFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
-       elecciones = kwargs.pop('cedulas')
-       super(EmitirFacturaFormulario, self).__init__(*args, **kwargs)
+        elecciones = kwargs.pop('cedulas')
+        super(EmitirFacturaFormulario, self).__init__(*args, **kwargs)
 
-       if(elecciones):
+        if(elecciones):
             self.fields["cliente"] = forms.CharField(label="Cliente a facturar",max_length=50,
             widget=forms.Select(choices=elecciones,
             attrs={'placeholder': 'La cedula del cliente a facturar',
             'id':'cliente','class':'form-control'}))
+        else:
+            self.fields["cliente"] = forms.CharField(label="Cliente a facturar",max_length=50,
+            widget=forms.TextInput(attrs={'placeholder': 'No existe ningún cliente',
+            'id':'cliente','class':'form-control', 'disabled': True}))
     
     productos = forms.IntegerField(label="Numero de productos",widget=forms.NumberInput(attrs={'placeholder': 'Numero de productos a facturar',
         'id':'productos','class':'form-control'}))
@@ -179,13 +183,17 @@ class DetallesFacturaFormulario(forms.Form):
 
 class EmitirPedidoFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
-       elecciones = kwargs.pop('cedulas')
-       super(EmitirPedidoFormulario, self).__init__(*args, **kwargs)
+        elecciones = kwargs.pop('cedulas')
+        super(EmitirPedidoFormulario, self).__init__(*args, **kwargs)
 
-       if(elecciones):
+        if(elecciones):
             self.fields["proveedor"] = forms.CharField(label="Proveedor",max_length=50,
             widget=forms.Select(choices=elecciones,attrs={'placeholder': 'La cedula del proveedor que vende el producto',
             'id':'proveedor','class':'form-control'}))
+        else:
+            self.fields["proveedor"] = forms.CharField(label="Proveedor",max_length=50,
+            widget=forms.TextInput(attrs={'placeholder': 'No existe ningún proveedor',
+            'id':'proveedor','class':'form-control', 'disabled': True}))
 
     productos = forms.IntegerField(label="Numero de productos",widget=forms.NumberInput(attrs={'placeholder': 'Numero de productos a comprar',
         'id':'productos','class':'form-control'}))
