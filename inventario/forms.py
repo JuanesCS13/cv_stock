@@ -217,7 +217,7 @@ class DetallesPedidoFormulario(forms.Form):
 
 
 class ProveedorFormulario(forms.ModelForm):
-    tipoC =  [ ('1','V'),('2','E') ]
+    tipoC =  [ ('1','CC'),('2','CE'),('3', 'NIT') ]
 
     telefono2 = forms.CharField(
         required = False,
